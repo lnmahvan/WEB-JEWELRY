@@ -98,7 +98,7 @@ export const Featured = () => {
                                             </div>
                                             <div className='flex gap-3 items-center justify-center'>
                                                 {Array(5).fill(0).map((_, index) => (
-                                                    <Star size={18} color={index < item.rating ? "#FFD700" : "#C0C0C0"} fill={index < item.rating ? "#FFD700" : "#C0C0C0"}>
+                                                    <Star key={index} size={18} color={index < item.rating ? "#FFD700" : "#C0C0C0"} fill={index < item.rating ? "#FFD700" : "#C0C0C0"}>
                                                     </Star>
                                                 ))}
                                             </div>
@@ -108,7 +108,7 @@ export const Featured = () => {
                                             </div>
                                             <div >
                                                 <div className='btn py-2 hover:bg-secondary transition-all duration-500 ease-in-out cursor-pointer'>
-                                                    Quick Add
+                                                    Xem chi tiết
                                                 </div>
                                             </div>
                                         </div>

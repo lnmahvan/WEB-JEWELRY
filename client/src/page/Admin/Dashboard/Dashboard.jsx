@@ -14,6 +14,7 @@ export const DashboardPage = () => {
     if (isLoading || !dashboards) return <div className="p-10 text-center text-muted-foreground">Loading dashboard...</div>;
 
     const { overview, today, charts, productOnTime } = dashboards?.data?.data;
+    console.log(overview, "overviewoverviewoverviewoverview")
     return (
         <div className="p-6 space-y-8 bg-linear-to-b from-slate-50 to-white min-h-screen">
             <div className="grid gap-2 grid-cols-4">

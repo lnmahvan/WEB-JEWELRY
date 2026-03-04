@@ -23,5 +23,9 @@ export const orderStore = create(() => ({
     updateOrderStatus: async (id, status) => {
         const res = await orderService.updateOrderStatus(id, status)
         return res;
+    },
+    updatePaymentStatus: async (id, paymentStatus) => {
+        const res = await orderService.updatePaymentStatus(id, paymentStatus);
+        return res;
     }
 }))

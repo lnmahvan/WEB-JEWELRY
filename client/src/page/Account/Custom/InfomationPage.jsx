@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import z from 'zod'
 const InfomationSchema = z.object({
-    size: z.coerce.number().min(5, "Size không hợp lệ").max(25, "Size không hợp lệ"),
+    size: z.coerce.number().min(5, "Size không hợp lệ").max(100, "Size không hợp lệ"),
     budget: z.coerce.number().min(5_000_000, "Ngân sách quá thấp"),
 })
 export const InfomationPage = () => {

@@ -18,7 +18,7 @@ class PaymentService {
             description: `DH${orderCode}`,
             expiredAt,
             returnUrl: 'http://localhost:5173/payment/success/custom',
-            cancelUrl: 'http://localhost:5173/payment/cancel',
+            cancelUrl: 'http://localhost:5173/payment/cancel/custom',
         });
         await customModel.findByIdAndUpdate(id, { orderCode });
         return {

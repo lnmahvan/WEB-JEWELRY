@@ -28,6 +28,7 @@ import { Preview3DPage } from '@/page/Account/Custom/Preview3D'
 import { DesignPage } from '@/page/Account/Custom/DesignPage'
 import { DesignRequire } from '@/page/Account/Profile/DesignRequire'
 import { SaleItemList } from '@/page/Account/SaleItem/SaleItemList'
+import PaymentCancel from '@/page/Account/Payment/PaymentCancel'
 
 export const RouterAccount = () => {
     return (
@@ -50,7 +51,8 @@ export const RouterAccount = () => {
                 </Route>
                 <Route index element={<Home />} />
                 <Route path="order/checkout" element={<Checkout />} />
-                <Route path='/payment-failed' element={<PaymentFailed />} />
+                <Route path='/payment/cancel/custom' element={<PaymentFailed />} />
+                <Route path='/payment/cancel' element={<PaymentCancel />} />
                 <Route path="/payment/success" element={<PaymentSuccess />} />
                 <Route path='/payment/success/custom' element={<PaymentSuccessCustom />} />
                 <Route path='/wish' element={<WishListPage />} />

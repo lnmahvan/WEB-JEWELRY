@@ -174,13 +174,13 @@ class chatBoxController extends BaseController {
                     const pipeline = [];
                     pipeline.push({
                         $lookup: {
-                            from: "categories",
-                            localField: "categoryId",
-                            foreignField: "_id",
-                            as: "category"
+                            from: "categories", // bảng muốn join
+                            localField: "categoryId",  // field bên products
+                            foreignField: "_id", // field bên categories
+                            as: "category"  // tên field mới sau khi join
                         }
                     });
-                    pipeline.push({ $unwind: "$category" });
+                    pipeline.push({ $unwind: "$category" }); // Biến mảng thành object
                     if (category) {
                         pipeline.push({
                             $match: {

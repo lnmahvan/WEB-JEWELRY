@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useNavigate } from 'react-router'
 import { RouterAccount } from './route/RouterAccount/RouterAccount'
 import axiosClient from './service/axiosClient'
 import { UserAuthStore } from './store/userAuthStore'
@@ -15,8 +15,10 @@ import { ToastContainer } from 'react-toastify'
 function App() {
   const [show, setShow] = useState(false)
   const { setValue } = commonStore()
+  const navigate = useNavigate()
   const lastValue = useRef(null);
   const setAccessToken = UserAuthStore((s) => s.setAccessToken);
+  const clearState = UserAuthStore((e) => e.clearState)
   useEffect(() => {
     const refresh = async () => {
       try {
@@ -24,6 +26,8 @@ function App() {
         setAccessToken(res.data.data.accessToken);
       } catch (err) {
         console.log("Không có refresh token hoặc đã hết hạn.");
+        localStorage.removeItem("user");
+        navigate("/login")
       }
     };
     refresh();
@@ -44,6 +48,8 @@ function App() {
         }
       } catch (error) {
         console.error("Lỗi đăng nhập Google:", error);
+        localStorage.removeItem("user");
+        navigate("/login")
       }
     }
     getUserInfo()

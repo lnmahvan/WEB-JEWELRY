@@ -90,7 +90,7 @@ export const BestSeller = () => {
                                         </div>
                                         <div >
                                             <div className='btn py-2 hover:bg-secondary transition-all duration-500 ease-in-out cursor-pointer'>
-                                                Quick Add
+                                                Xem chi tiết
                                             </div>
                                         </div>
                                     </div>

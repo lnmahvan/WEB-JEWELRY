@@ -264,7 +264,13 @@ class OrderService {
             orderModel.countDocuments(filter),
             orderModel.find({ userId })
         ])
-        const totalPricePerson = allOrders.reduce((acc, toatl) => toatl.paymentStatus === "PAID" && acc + toatl.total, 0)
+        console.log(allOrders, "allOrdersallOrdersallOrders")
+        const totalPricePerson = allOrders.reduce((acc, order) => {
+            if (order.paymentStatus === "PAID") {
+                return acc + order.total;
+            }
+            return acc;
+        }, 0);
         const totalPriceOrder = allOrders.reduce((acc, order) => {
             if (status === "ALL") return acc + order.total
             if (order.status === status) return acc + order.total

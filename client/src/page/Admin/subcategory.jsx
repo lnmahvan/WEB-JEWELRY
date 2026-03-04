@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CirclePlus, Download, ImageUp, RefreshCw, SquarePen, Trash, Trash2, X } from 'lucide-react'
-import React, { useState } from 'react'
+import { CirclePlus, Download, ImageUp, RefreshCw, Search, SquarePen, Trash, Trash2, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 import { BoxProduct } from './BoxProduct/BoxProduct'
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroupItem } from '@/components/ui/radio-group'
 import { RadioGroup } from '@radix-ui/react-radio-group'
 import { PaginationCustom } from '@/lib/PaginationCustom'
+import { useSearchParams } from 'react-router'
 const SubcategorySchema = z.object({
     name: z.string().min(1, "Tên bắt buộc nhập"),
     // images: z.array(z.object({
@@ -22,14 +23,19 @@ const SubcategorySchema = z.object({
 })
 export const SubcategoryPage = () => {
     const [valuePage, setValuePage] = useState(1)
+    const [keyword, setKeyword] = useState("")
+    const [search, setSearch] = useState("")
+    const [searchParams, setSearchParams] = useSearchParams();
     const { categories, refreshCategory } = useGetListCategory({
         page: 1,
         limit: 10
     })
-    const { subcategory, isLoading, isValidating, refreshSubcategoty } = useGetListSubcategory({
+    const dataFilter = {
         page: valuePage,
-        limit: 5
-    })
+        limit: 5,
+        search
+    }
+    const { subcategory, isLoading, isValidating, refreshSubcategoty } = useGetListSubcategory(dataFilter)
     const { createSubCategory, uploadImgSub, deleteImgTem, updateSubcate, deleteSubcate } = subcategoryStore()
     console.log(subcategory, "subcategorysubcategorysubcategory")
     console.log(">>>>categories", categories)
@@ -78,6 +84,8 @@ export const SubcategoryPage = () => {
     console.log(">>> subcategory", subcategory)
     const handleRefresh = async () => {
         await refreshSubcategoty()
+        setKeyword("")
+        setSearch("")
     }
     const handleUpload = async (e) => {
         const files = e.target.files;
@@ -146,6 +154,20 @@ export const SubcategoryPage = () => {
     const handleChangePage = (e, value) => {
         setValuePage(value)
     }
+    const handleSubmitCate = (e) => {
+        e.preventDefault();
+        if (!keyword.trim()) return;
+        setSearch(keyword.trim());
+    };
+    useEffect(() => {
+        const params = new URLSearchParams();
+        params.set("page", dataFilter.page.toString());
+        params.set("limit", dataFilter.limit.toString());
+        if (dataFilter.search?.trim()) {
+            params.set("search", dataFilter.search.trim());
+        }
+        setSearchParams(params);
+    }, [dataFilter.page, dataFilter.limit, dataFilter.search]);
     return (
         <div className='relative min-h-screen bg-gray-100 px-8 py-6 shadow-md'>
             {(isLoading || isValidating) && (
@@ -157,6 +179,31 @@ export const SubcategoryPage = () => {
                 <h1 className="text-xl font-semibold">
                     Quản lý danh mục
                 </h1>
+                <form
+                    onSubmit={handleSubmitCate}
+                    className="flex items-center gap-3 w-full max-w-md"
+                >
+                    <div className="relative flex-1">
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Nhập tên sản phẩm..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            className="w-full pl-10 pr-4 py-1 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="px-5 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition font-medium cursor-pointer"
+                    >
+                        <Search size={18} />
+                    </button>
+                </form>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => {
@@ -167,13 +214,13 @@ export const SubcategoryPage = () => {
                         }}
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer">
                         <CirclePlus size={18} />
-                        Thêm danh mục
+                        {/* Thêm danh mục */}
                     </button>
                     <button
                         onClick={handleRefresh}
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer">
                         <RefreshCw size={18} />
-                        Refresh
+                        {/* Refresh */}
                     </button>
                 </div>
             </div>

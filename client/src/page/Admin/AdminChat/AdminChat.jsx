@@ -14,9 +14,21 @@ export const AdminChat = () => {
     const { chats, isLoading } = useGetListChat({ page: 1, limit: 10 });
     console.log(chats, "chatschatschatschatschats")
     useEffect(() => {
-        console.log("join_admin", "vfbmbb")
         socket.emit("join_admin");
     }, []);
+    useEffect(() => {
+        if (chats?.data?.data?.messages) {
+            const map = {};
+            chats.data.data.messages.forEach(c => {
+                map[c.user._id] = {
+                    ...c,
+                    roomId: c.user._id
+                };
+            });
+            setRooms(map);
+        }
+        console.log(rooms, "roomsroomsmap")
+    }, [chats]);
     useEffect(() => {
         if (name !== "chat") return;
         const messageHandler = (msg) => {
@@ -41,19 +53,6 @@ export const AdminChat = () => {
         socket.on("message", messageHandler);
         return () => socket.off("message", messageHandler);
     }, []);
-    useEffect(() => {
-        if (chats?.data?.data?.messages) {
-            const map = {};
-            chats.data.data.messages.forEach(c => {
-                map[c.user._id] = {
-                    ...c,
-                    roomId: c.user._id
-                };
-            });
-            setRooms(map);
-        }
-        console.log(rooms, "roomsroomsmap")
-    }, [chats]);
     console.log(rooms, "roomsroomsrooms")
     const joinRoom = (id) => {
         setRoomId(id);

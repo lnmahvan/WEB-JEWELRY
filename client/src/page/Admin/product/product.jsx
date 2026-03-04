@@ -2,7 +2,7 @@ import { useGetListProduct } from '@/hooks/Product/useGetListProduct'
 import { formatBigNumber } from '@/lib/format-big-number'
 import { ProductStore } from '@/store/productStore/ProductStore'
 import dayjs from 'dayjs'
-import { CirclePlus, FileUp, RefreshCw, SquarePen, Star, Trash } from 'lucide-react'
+import { CirclePlus, FileUp, RefreshCw, Search, SquarePen, Star, Trash } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { BoxProduct } from '../BoxProduct/BoxProduct'
@@ -17,12 +17,17 @@ export const Product = () => {
     const [dataUpTem, setDataUpTem] = useState([])
     const [uploadFile, setUploadFile] = useState(null)
     const [valuePage, setValuePage] = useState(1)
+    const [keyword, setKeyword] = useState("")
+    const [search, setSearch] = useState("")
     const { products, error, isLoading, isValidating, refreshProduct } = useGetListProduct({
         page: valuePage,
-        limit: 2
+        limit: 2,
+        search
     })
     const handleRefresh = async () => {
         await refreshProduct()
+        setKeyword("")
+        setSearch("")
     }
     const handleEditProduct = (id) => {
         navigate(`/admin/product-manage/products/edit/${id}`)
@@ -71,6 +76,11 @@ export const Product = () => {
         console.log(value, "fvfjvnfjvnfj")
         setValuePage(value)
     }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!keyword.trim()) return;
+        setSearch(keyword.trim());
+    };
     console.log(dataUpTem, "dataUpPreviewdataUpPreviewdataUpPreviewdataUpPreview")
     console.log("products", products)
     return (
@@ -85,24 +95,49 @@ export const Product = () => {
                 <h1 className="text-xl font-semibold">
                     Quản lý sản phẩm
                 </h1>
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex items-center gap-3 w-full max-w-md"
+                >
+                    <div className="relative flex-1">
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Nhập tên sản phẩm..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            className="w-full pl-10 pr-4 py-1 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="px-5 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition font-medium cursor-pointer"
+                    >
+                        <Search size={18} />
+                    </button>
+                </form>
                 <div className="flex items-center gap-3">
                     <Link to="/admin/product-manage/products/add"
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer">
                         <CirclePlus size={18} />
-                        Thêm sản phẩm
+                        {/* Thêm sản phẩm */}
                     </Link>
                     <button
                         onClick={handleRefresh}
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer">
                         <RefreshCw size={18} />
-                        Refresh
+                        {/* Refresh */}
                     </button>
                     <label
                         htmlFor="fileUpload"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:opacity-80"
                     >
                         <FileUp size={18} />
-                        Upload File
+                        {/* Upload File */}
                     </label>
 
                     <input

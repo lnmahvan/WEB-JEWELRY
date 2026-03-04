@@ -101,7 +101,7 @@ export const DesignRequire = () => {
                             </p>
                         </div>
                         <div className="mt-4">
-                            {item.status === "APPROVED" && item.paymentStatus === "PENDING" && (
+                            {item.status === "APPROVED" && item.paymentStatus !== "PAID" && (
                                 <button
                                     className="w-full bg-primary text-white py-2 rounded-lg
                                     hover:opacity-80 active:scale-95 transition cursor-pointer"

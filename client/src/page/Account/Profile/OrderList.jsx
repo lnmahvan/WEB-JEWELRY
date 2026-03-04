@@ -1,6 +1,7 @@
 import { useGetListOrderByUserId } from '@/hooks/Order/useGetListOrderByUserId'
 import { formatBigNumber } from '@/lib/format-big-number'
 import { PaginationCustom } from '@/lib/PaginationCustom'
+import { orderStore } from '@/store/orderStore/orderStore'
 import { reviewStore } from '@/store/reviewStore/reviewStore'
 import dayjs from 'dayjs'
 import { ArrowUpAZ, CircleDollarSign, CircleX, Clock, ClockCheck, Handbag, Package, PackageCheck, Star, Truck, X } from 'lucide-react'
@@ -9,6 +10,7 @@ import { toast } from 'react-toastify'
 
 export const OrderList = () => {
     const { createReview } = reviewStore()
+    const { updatePaymentStatus } = orderStore()
     const [review, setReview] = useState(null)
     console.log(review, "reviewreviewreviewreview")
     const [valuePage, setValuePage] = useState(1)
@@ -17,6 +19,8 @@ export const OrderList = () => {
     const [hover, setHover] = useState(0)
     const [loading, setLoading] = useState(false)
     const [comment, setComment] = useState("")
+    const [modal, setModal] = useState(false)
+    const [orderId, setOrderId] = useState(null)
     const { orderUsers, isLoading, refreshOrderUsers } = useGetListOrderByUserId({
         page: valuePage,
         limit: 6,
@@ -73,6 +77,17 @@ export const OrderList = () => {
             setReview(null);
         }
     }
+    const handleUpdatePaymentStatus = async () => {
+        if (orderId) {
+            const res = await updatePaymentStatus(orderId, "FAILED")
+            if (res.status === 200) {
+                toast.success("Hủy đơn hàng thành công")
+                setModal(false)
+                setOrderId(null)
+                await refreshOrderUsers()
+            }
+        }
+    }
     return (
         <div className="space-y-4 relative min-h-screen pb-16">
             {(isLoading) && (
@@ -112,16 +127,16 @@ export const OrderList = () => {
                             <span
                                 className="px-3 py-1 text-sm rounded-full bg-secondary text-white"
                             >
-                                {order.paymentStatus === "PAID" ? "Đã thanh toán" : "Thanh toán khi nhận hàng"}
+                                {order.paymentStatus === "PAID" ? "Đã thanh toán" : order.paymentStatus === "FAILED" ? "Đã hủy" : "Thanh toán khi nhận hàng"}
                             </span>
-                            <div className='flex items-center gap-2 bg-primary rounded-full px-3 py-1 text-white'>
+                            {order.paymentStatus !== "FAILED" && <div className='flex items-center gap-2 bg-primary rounded-full px-3 py-1 text-white'>
                                 <span>{dataProcess[order?.status].icon}</span>
                                 <span
                                     className=" text-sm"
                                 >
                                     {dataProcess[order?.status].sta}
                                 </span>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -148,7 +163,7 @@ export const OrderList = () => {
                             {formatBigNumber(Math.ceil(order.total), true)}
                         </div>
                     </div>
-                    <div className='flex justify-between items-center mt-4'>
+                    <div className='flex justify-between items-center mt-4 relative'>
                         <div>
                             {order.status === "COMPLETED" && (
                                 <button onClick={() => setReview(order)} className="btn rounded-sm px-2 py-1 text-[14px] bg-transparent border border-primary text-primary cursor-pointer">
@@ -156,14 +171,50 @@ export const OrderList = () => {
                                 </button>
                             )}
                         </div>
-                        <div className=''>
+                        {order.paymentStatus !== "PAID" && order.paymentStatus !== "FAILED" && order.status === "PENDING" ? <div className='' onClick={() => {
+                            setModal(true)
+                            setOrderId(order._id)
+                        }}>
                             <button className='btn rounded-sm px-2 py-1 text-[14px] bg-transparent border border-primary text-primary cursor-pointer'>
-                                Xem chi tiết
+                                Hủy đơn hàng
+                            </button>
+                        </div> : ""}
+                    </div>
+                </div>
+            ))}
+            {modal && (
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-6 w-96 shadow-xl relative">
+
+                        <h3 className="text-lg font-semibold mb-4">
+                            Xác nhận hủy đơn
+                        </h3>
+
+                        <p className="text-gray-600 mb-6">
+                            Bạn có chắc muốn hủy đơn hàng không?
+                        </p>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => {
+                                    setModal(false)
+                                    setOrderId(null)
+                                }
+                                }
+                                className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer"
+                            >
+                                Không
+                            </button>
+
+                            <button
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer" onClick={handleUpdatePaymentStatus}
+                            >
+                                Đồng ý
                             </button>
                         </div>
                     </div>
                 </div>
-            ))}
+            )}
             <div className='grid grid-cols-3 gap-6 my-12'>
                 <div className='bg-white shadow-2xl rounded-xl flex items-center justify-center flex-col p-6 space-y-2'>
                     <div className='size-10 bg-primary flex items-center justify-center text-white rounded-full'>

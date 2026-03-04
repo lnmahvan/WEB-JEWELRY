@@ -2,7 +2,7 @@ import { useGetListProduct } from '@/hooks/Product/useGetListProduct'
 import { formatBigNumber } from '@/lib/format-big-number'
 import { Check, Heart, Star } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { useGetListSubcategory } from '@/hooks/subcategoty/useGetListSubcategory'
@@ -11,6 +11,7 @@ import { PaginationCustom } from '@/lib/PaginationCustom'
 
 export const FilterProduct = () => {
     const params = useParams()
+    const [searchParams, setSearchParams] = useSearchParams();
     const colors = [
         { color: "xanh", label: "Blue", value: "#3366CC" },
         { color: "hồng", label: "Pink", value: "#FF33CC" },
@@ -93,13 +94,59 @@ export const FilterProduct = () => {
     //     handleRefresh()
     // }, [])
     const onSubmit = async (data) => {
-        setFill((prev) => ({ ...prev, search: data.search, carat: data.carat, purity: data.purity, gram: data.gram, mm: data.mm, min: value[0], max: value[1], color: valueColor }))
+        const newFilter = {
+            ...fill,
+            search: data.search || "",
+            carat: data.carat || "",
+            purity: data.purity || "",
+            gram: data.gram || "",
+            mm: data.mm || "",
+            min: value[0],
+            max: value[1],
+            color: valueColor || ""
+        };
+
+        setFill(newFilter);
+
+        const params = {};
+
+        Object.entries(newFilter).forEach(([key, value]) => {
+            if (value !== "" && value !== undefined) {
+                params[key] = value;
+            }
+        });
+        console.log(params, "paramsparamsparamsparams")
+
+        setSearchParams(params);
         await refreshProduct()
     };
     const handleChangePage = (e, value) => {
         setValuePage(value)
+        const params = Object.fromEntries(searchParams.entries());
+        params.page = value;
+        setSearchParams(params);
     }
     console.log(fill, "jkmjkmkmkj")
+    useEffect(() => {
+        const paramsObj = Object.fromEntries(searchParams.entries());
+
+        setFill(prev => ({
+            ...prev,
+            ...paramsObj,
+            page: Number(paramsObj.page) || 1,
+            min: paramsObj.min ? Number(paramsObj.min) : "",
+            max: paramsObj.max ? Number(paramsObj.max) : ""
+        }));
+
+        if (paramsObj.min && paramsObj.max) {
+            setValue([Number(paramsObj.min), Number(paramsObj.max)]);
+        }
+
+        if (paramsObj.color) {
+            setValueColor(paramsObj.color);
+        }
+
+    }, []);
     return (
         <div className='px-7.5 p-16'>
             {(isLoading) && (
@@ -346,7 +393,7 @@ export const FilterProduct = () => {
 
                                             <div>
                                                 <div className="btn py-2 hover:bg-secondary transition-all duration-500 ease-in-out cursor-pointer">
-                                                    Quick Add
+                                                    Xem chi tiết
                                                 </div>
                                             </div>
                                         </div>

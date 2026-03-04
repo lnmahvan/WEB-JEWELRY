@@ -34,7 +34,9 @@ class PaymentController extends BaseController {
                 status,
                 orderCode,
             });
-            await sendEmail(result.emailUser, result.cusOrder)
+            if (result?.cusOrder.paymentStatus === "PAID") {
+                await sendEmail(result.emailUser, result.cusOrder)
+            }
             return this.ok(res, result, "Thành Công")
         } catch (error) {
             console.error("Payment callback error:", error);
@@ -52,7 +54,9 @@ class PaymentController extends BaseController {
                 status,
                 orderCode,
             });
-            await sendEmail(result.emailUser, result.orderSuc)
+            if (result.orderSuc.paymentStatus === "PAID") {
+                await sendEmail(result.emailUser, result.orderSuc)
+            }
             return this.ok(res, result, "Thành công")
         } catch (error) {
             console.error("Payment callback error:", error);

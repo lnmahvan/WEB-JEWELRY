@@ -1,5 +1,5 @@
 
-import { API_CREATE_ORDER, API_GET_ORDERS_BY_USER_ID, API_ORDER, API_PREVIEW_ORDER, API_UPDATE_ORDER_STATUS, API_USE_COUPON } from "@/api/api"
+import { API_CREATE_ORDER, API_GET_ORDERS_BY_USER_ID, API_ORDER, API_PREVIEW_ORDER, API_UPDATE_ORDER_STATUS, API_UPDATE_PAYMENTSTATUS, API_USE_COUPON } from "@/api/api"
 import axiosClient from "../axiosClient"
 
 export const orderService = {
@@ -59,6 +59,16 @@ export const orderService = {
     updateOrderStatus: async (id, status) => {
         try {
             const res = await axiosClient.put(`${API_UPDATE_ORDER_STATUS}/${id}/status`, { status })
+            if (res.status === 200) {
+                return res;
+            }
+        } catch (error) {
+            throw error
+        }
+    },
+    updatePaymentStatus: async (id, paymentStatus) => {
+        try {
+            const res = await axiosClient.put(`${API_UPDATE_PAYMENTSTATUS}/${id}/payment-status`, { paymentStatus })
             if (res.status === 200) {
                 return res;
             }

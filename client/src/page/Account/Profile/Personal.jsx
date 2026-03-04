@@ -15,6 +15,7 @@ export const Personal = () => {
         page: 1,
         limit: 10
     })
+    console.log(orderUsers, "orderUsersorderUsers")
     console.log(user, "useruseruser")
     console.log(wishs, "wishswishswishs")
     return (
@@ -30,11 +31,11 @@ export const Personal = () => {
                             <h2 className='text-[20px] font-bold'>{user?.fullName}</h2>
                             <p className='text-[14px] font-light'>{user?.email}</p>
                         </div>
-                        <div>
+                        {/* <div>
                             <div className='btn inline-block rounded-xl bg-transparent border-primary border text-primary px-8.5 py-3.5'>
                                 Sửa hồ sơ
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className='grid grid-cols-3 gap-6 my-12'>

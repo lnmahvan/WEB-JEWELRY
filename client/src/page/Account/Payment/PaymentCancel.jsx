@@ -1,38 +1,31 @@
-import axiosClient from "@/service/axiosClient"
-import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router"
+import { AlertCircle, Home, RotateCcw } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
-import { CheckCircle, Home, ShoppingBag } from "lucide-react"
+import axiosClient from "@/service/axiosClient"
 
-export const PaymentSuccess = () => {
-    const location = useLocation()
+const PaymentCancel = () => {
     const navigate = useNavigate()
+    const location = useLocation()
     const [isProcessing, setIsProcessing] = useState(true)
-    const [showSuccess, setShowSuccess] = useState(false)
-
+    const [show, setShow] = useState(false)
     useEffect(() => {
         const params = new URLSearchParams(location.search)
-        console.log(params, "paramsparamsparamsparams")
         const code = params.get("code")
         const orderCode = params.get("orderCode")
-        console.log(code, "bkgbkgbk")
-        console.log(orderCode, "orderCodeorderCodeorderCode")
+
         if (!orderCode) {
             toast.error("Không tìm thấy mã đơn hàng")
             navigate("/payment-failed", { replace: true })
             return
         }
-
-        axiosClient.post(`api/payment/success${location.search}`)
+        axiosClient.post(`api/payment/cancel/${location.search}`)
             .then((res) => {
                 console.log(res, "resresres")
                 const paymentStatus = res.data?.data?.orderSuc?.paymentStatus
-                console.log(paymentStatus, "paymentStatuspaymentStatus")
-                if (code === "00" && paymentStatus === "PAID") {
+                if (code === "00" && paymentStatus === "FAILED") {
                     setIsProcessing(false)
-                    setShowSuccess(true)
-                } else {
-                    navigate("/payment-failed", { replace: true })
+                    setShow(true)
                 }
             })
             .catch((err) => {
@@ -40,7 +33,6 @@ export const PaymentSuccess = () => {
                 navigate("/payment-failed", { replace: true })
             })
     }, [location.search, navigate])
-
     if (isProcessing) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
@@ -65,46 +57,36 @@ export const PaymentSuccess = () => {
             </div>
         )
     }
-    if (showSuccess) {
+    if (show) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#f0fdf4] to-[#dbeafe]">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 max-w-md mx-4 transform transition-all duration-500 scale-100 animate-in fade-in zoom-in">
+            <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#fef2f2] to-[#fee2e2]">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 max-w-md mx-4">
                     <div className="flex justify-center mb-6">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-green-400 rounded-full opacity-20 animate-pulse"></div>
-                            <CheckCircle className="w-20 h-20 text-green-500" strokeWidth={1.5} />
+                            <div className="absolute inset-0 bg-red-400 rounded-full opacity-20 animate-pulse"></div>
+                            <AlertCircle className="w-20 h-20 text-red-500" strokeWidth={1.5} />
                         </div>
                     </div>
                     <div className="text-center space-y-4">
-                        <h1 className="text-3xl font-bold text-gray-900">Thanh toán thành công!</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">Thanh toán thất bại</h1>
                         <p className="text-gray-600 text-lg">
-                            Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được xác nhận.
+                            Rất tiếc, giao dịch của bạn không hoàn tất được. Vui lòng thử lại.
                         </p>
-                        <div className="bg-linear-to-r from-primary to-secondary rounded-lg p-4 my-6">
-                            <p className="text-sm text-white mb-1">Mã đơn hàng:</p>
-                            <p className="text-xl font-bold text-white font-mono">
-                                {new URLSearchParams(location.search).get("orderCode")}
-                            </p>
-                        </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 mt-8">
+                    <div className="flex items-center justify-center mt-8">
                         <button
                             onClick={() => navigate("/")}
-                            className="flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                            className="flex items-center justify-center gap-2 bg-linear-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105"
                         >
                             <Home className="w-5 h-5" />
                             <span className="cursor-pointer">Trang chủ</span>
-                        </button>
-                        <button
-                            onClick={() => navigate("/cart")}
-                            className="flex items-center justify-center gap-2 bg-secondary text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer"
-                        >
-                            <ShoppingBag className="w-5 h-5" />
-                            <span className="cursor-pointer">Giỏ hàng</span>
                         </button>
                     </div>
                 </div>
             </div>
         )
     }
+
 }
+
+export default PaymentCancel

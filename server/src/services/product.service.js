@@ -340,22 +340,22 @@ class ProductService {
                 if (!value) return [];
                 if (Array.isArray(value)) return value;
                 return value
-                    .replace(/[\[\]]/g, "")
-                    .split(",")
-                    .map(v => v.trim());
+                    .replace(/[\[\]]/g, "") // "vàng,bạc,kim cương"
+                    .split(",") // ["vàng", "bạc", "kim cương"]
+                    .map(v => v.trim()); // ["vàng", "bạc", "kim cương"]
             };
             const parseExcelDate = (value) => {
-                if (!value) return null;
-                if (value instanceof Date) return value;
+                if (!value) return null; // trường hợp ô trống
+                if (value instanceof Date) return value; // nếu đã là Date object
                 if (typeof value === "number") {
-                    return new Date(Math.round((value - 25569) * 86400 * 1000));
+                    return new Date(Math.round((value - 25569) * 86400 * 1000)); // Excel date number
                 }
                 if (typeof value === "string") {
                     if (value.includes("/")) {
-                        const [month, day, year] = value.split("/").map(Number);
-                        return new Date(year, month - 1, day);
+                        const [day, month, year] = value.split("/").map(Number); // định dạng dd/mm/yyyy
+                        return new Date(year, month - 1, day); // tháng trong Date là 0-indexed
                     }
-                    return new Date(value);
+                    return new Date(value); // thử parse trực tiếp nếu là chuỗi khác
                 }
                 return null;
             };

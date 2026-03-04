@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { CirclePlus, Download, RefreshCw, SquarePen, Trash, X } from 'lucide-react'
+import { CirclePlus, Download, RefreshCw, Search, SquarePen, Trash, X } from 'lucide-react'
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,10 +23,12 @@ export const BrandPage = () => {
     })
     const [model, setModel] = useState(false);
     const [valuePage, setValuePage] = useState(1)
+    const [keyword, setKeyword] = useState("")
+    const [search, setSearch] = useState("")
     const dataFilter = {
         page: valuePage,
         limit: 10,
-        // search: "",
+        search,
     }
     const { brands, isLoading, isValidating, refreshBrand } = useGetListBrand(dataFilter)
     const onSubmit = async (data) => {
@@ -65,16 +67,24 @@ export const BrandPage = () => {
     }
     const handleRefresh = async () => {
         await refreshBrand();
+        setKeyword("")
+        setSearch("")
     }
     const handleChangePage = (e, value) => {
         setValuePage(value)
     }
+    const handleSubmitCate = (e) => {
+        e.preventDefault();
+        if (!keyword.trim()) return;
+        setSearch(keyword.trim());
+    };
     useEffect(() => {
-        const params = new URLSearchParams({
-            page: dataFilter.page.toString(),
-            limit: dataFilter.limit.toString(),
-            search: dataFilter.search || ""
-        });
+        const params = new URLSearchParams();
+        params.set("page", dataFilter.page.toString());
+        params.set("limit", dataFilter.limit.toString());
+        if (dataFilter.search?.trim()) {
+            params.set("search", dataFilter.search.trim());
+        }
         setSearchParams(params);
     }, [dataFilter.page, dataFilter.limit, dataFilter.search]);
     console.log(brands, "fbnfbngmngm")
@@ -87,6 +97,31 @@ export const BrandPage = () => {
             )}
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold">Quản lý thương hiệu</h2>
+                <form
+                    onSubmit={handleSubmitCate}
+                    className="flex items-center gap-3 w-full max-w-md"
+                >
+                    <div className="relative flex-1">
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Nhập tên sản phẩm..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            className="w-full pl-10 pr-4 py-1 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="px-5 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition font-medium cursor-pointer"
+                    >
+                        <Search size={18} />
+                    </button>
+                </form>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => {
@@ -97,13 +132,13 @@ export const BrandPage = () => {
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl
                         hover:opacity-80 active:scale-95 transition cursor-pointer">
                         <CirclePlus />
-                        <span>Thêm thương hiệu</span>
+                        {/* <span>Thêm thương hiệu</span> */}
                     </button>
                     <button
                         onClick={handleRefresh}
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl hover:opacity-80 active:scale-95 transition cursor-pointer">
                         <RefreshCw />
-                        <span>Refresh</span>
+                        {/* <span>Refresh</span> */}
                     </button>
                 </div>
             </div>

@@ -114,7 +114,7 @@ class DashboardService {
                             { $toString: "$_id.month" }
                         ]
                     },
-                    revenue: 1,
+                    revenue: 1, // giữ lại field đó trong kết quả còn không có là 0
                     orders: 1
                 }
             }

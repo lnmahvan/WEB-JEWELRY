@@ -95,6 +95,7 @@ export const API_GET_ORDERS_BY_USER_ID = "/api/order/list-order"
 export const API_UPDATE_ORDER_STATUS = "/api/order"
 export const API_UPDATE_PAYMENT_STATUS = "/api/order"
 export const API_CANCEL_ORDER = "/api/order"
+export const API_UPDATE_PAYMENTSTATUS = "/api/order"
 
 export const API_PROVINCES = "/api/provinces"
 export const API_COMMUNES = "/api/provinces"
